@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 To create a web project for Library Management System
 
 1) Open Eclipse
@@ -3122,3 +3123,3129 @@ Name:Logout.jsp
 </html>
 
 
+=======
+To create a web project for Library Management System
+
+1) Open Eclipse
+
+2) Create a Dynamic Web Project
+File-> New-> Other-> Dynamic Web Project-> 
+Project name:SUB1_LMS
+click on New Runtime button
+choose Apache Tomcat v7.0
+click on Next-> click on Browse button and select the path of Tomcat D:\Softwares\apache-tomcat-7.0.99-windows-x64\apache-tomcat-7.0.99
+click on select folder button
+click on Installed JREs
+click on Add button-> select Standard VM-> click on Next-> click on Directory button-> select the path of JDK C:\Program Files\Java\jdk-17
+JRE Name:jdk-17
+click on Finish button
+click on Apply & Close
+select recently created JRE from JRE drop down list box
+click on Finish
+click on Next-> Next-> select the Generate web.xml deployment descriptor checkbox
+click on Finish
+click on open Perspective button
+
+3) copying the mysql-connector jar file into Tomcat
+Copy
+"D:\Softwares\mysql-connector-j-9.2.0\mysql-connector-j-9.2.0\mysql-connector-j-9.2.0.jar"
+
+and paste into tomcat lib directory
+D:\Softwares\apache-tomcat-7.0.99-windows-x64\apache-tomcat-7.0.99\lib
+
+4) Open XAAMP or MySQLWorkbench create following tables in "lms" schema
+
+DROP TABLE lms.bookIssued;
+DROP TABLE lms.book;
+DROP TABLE lms.register;
+
+create table register (
+	regId INT,
+	name VARCHAR(50),
+	email VARCHAR(50),
+	pass VARCHAR(20),
+	mobile BIGINT,
+	address VARCHAR(50),
+	roleName ENUM ('Admin','Student') NOT NULL,
+	CONSTRAINT register_regId_pk PRIMARY KEY(regId)
+);
+
+
+create table book (
+	isbn VARCHAR(10),
+	bookName VARCHAR(50),
+	author VARCHAR(50),
+	price DOUBLE,
+	publisher VARCHAR(50),
+	publishingYear INT,
+	qtyAvailable INT,
+	CONSTRAINT book_isbn_PK PRIMARY KEY(isbn)	
+);
+
+create table bookIssued (
+	issueId INT,
+	isbn VARCHAR(10),
+	bookName  VARCHAR(50),
+	regId INT,
+	name VARCHAR(50),
+	reserveDate DATE,
+	issueDate DATE,
+	renewalDate DATE,
+	returnedDate DATE,
+	status ENUM('RESERVED','ISSUED','RENEWALED','RETURNED') NOT NULL,
+	CONSTRAINT bookIssued_issueId_pk PRIMARY KEY(issueId),
+	CONSTRAINT bookIssued_isbn_fk FOREIGN KEY(isbn) REFERENCES book(isbn),
+	CONSTRAINT bookIssued_regId_fk FOREIGN KEY(regId) REFERENCES register(regId)
+);
+
+********************The overall directory structure of the project**************************
+5) Create a Dynamic Web Project
+Name:SUB1_LMS project
+SUB1_LMS
+	src/main/java
+		beans
+			Register.java
+			Book.java
+			BookIssued.java
+		dao
+			LibraryDAO.java
+			LibraryJDBCDAO.java
+			LibraryStudentDAO.java
+			LibraryStudentJDBCDAO.java
+		factory
+			DBConn.java
+		servlets
+			AddBookServlet.java
+			LoginServlet.java
+			RegisterServlet.java
+		
+	src/main/
+		webapp
+			admin
+				addBook.jsp
+				adminIndex.jsp
+				bookIssue.jsp
+				findAllBooks.jsp
+				findIssuedBooks.jsp
+				findRenewaledBook.jsp
+				findReservedBook.jsp
+				findReturnedBook.jsp
+				renewalBook.jsp
+				returnBook.jsp
+			bootstrap-4.0.0
+			META-INF
+			student
+				findAllBook.jsp
+				findIssuedBook.jsp
+				findRenewaledBooks.jsp
+				findReservedBook.jsp
+				reserveBook.jsp
+				studentIndex.jsp
+			WEB-INF
+				web.xml
+			index.jsp
+			Logout.jsp
+			Register.html
+			
+
+6) Create following packages in 
+	src/main/java
+		beans
+		dao
+		factory
+		servlets 
+		
+7) Copy index.jsp and Register.html files into our project webapp directory
+SUB1_LMS
+	src
+		main
+			java
+			webapp
+				index.jsp
+				Register.html
+
+8) index.jsp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Form</title>
+  <link href="./bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Management System</a>
+</nav>
+
+<div class="container py-2">
+	<p style="color:red;text-align: center;text-shadow: blue;"><b>${loginError}</b></p>	
+  <h2 class="mb-4 text-center">Login</h2>
+  <form method="post" action="./LoginServlet">
+  <div class="row">
+      <div class="col-md-2 mx-auto">
+        <div class="form-group mb-3">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" name="email"
+            aria-describedby="emailHelp" placeholder="Enter email"/>
+        </div>
+        <div class="form-group mb-3">
+          <label for="pass">Password</label>
+          <input type="password" class="form-control" id="pass" name="pass"
+            aria-describedby="passHelp" placeholder="Enter password"/>
+        </div>
+        <div class="form-group mb-3">
+          <label for="role">Role</label>
+	      <select class="form-select" id="role" required  name="roleName">
+	        <option value="" selected disabled>Select role</option>
+	        <option value="admin">Admin</option>
+	        <option value="student">Student</option>
+	      </select>
+        </div>
+        <div class="form-group mb-3">
+			<button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<center><a href="./Register.html">SignUp</a></center>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+9) Register.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registration Form</title>
+  <link href="./bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Management System</a>
+</nav>
+
+<div class="container py-2">
+  <h2 class="mb-4 text-center">Register</h2>
+  <form method="post" action="./RegisterServlet">
+  <div class="row">
+      <div class="col-md-2 mx-auto">  
+        <div class="form-group mb-3">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" name="name"
+            aria-describedby="nameHelp" placeholder="Enter Name"/>
+        </div>
+        <div class="form-group mb-3">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email"
+            aria-describedby="emailHelp" placeholder="Enter email"/>
+        </div>
+        <div class="form-group mb-3">
+          <label for="pass">Password</label>
+          <input type="password" class="form-control" id="pass" name="pass"
+            aria-describedby="passHelp" placeholder="Enter password"/>
+        </div>
+        <div class="form-group mb-3">
+          <label for="mobile">Mobile</label>
+          <input type="text" class="form-control" id="mobile" name="mobile"
+            aria-describedby="mobileHelp" placeholder="Enter Mobile"/>
+        </div>
+        <div class="form-group mb-3">
+          <label for="address">Address</label>
+          <textarea class="form-control" id="address" name="address"
+            aria-describedby="addressHelp" placeholder="Enter Address"></textarea>
+        </div>
+        <div class="form-group mb-3">
+          <label for="role">Role</label>
+	      <select class="form-select" id="role" required name="roleName">
+	        <option value="" selected disabled>Select role</option>
+	        <option value="Admin">Admin</option>
+	        <option value="Student">Student</option>
+	      </select>
+        </div>
+        <div class="form-group mb-3">
+			<button type="submit" class="btn btn-primary">Register</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<center><a href="./index.jsp">SignIn</a></center>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+10) Create a Register Bean
+Rught click on the project-> New-> Class
+Package:beans
+Name:Register
+// Register.java
+package beans;
+
+public class Register {
+	private int regId;
+	private String name;
+	private String email;
+	private String pass;
+	private long mobile;
+	private String address;
+	private String roleName;
+
+	// no parameter constructor
+	// Right click on code editor-> Source-> Generate Constructors from super class
+	public Register() {
+		super();
+	}
+
+	// generate parameterized constructor
+	// Generate Constructor using fields
+	public Register(int regId, String name, String email, String pass, long mobile, String address, String roleName) {
+		super();
+		this.regId = regId;
+		this.name = name;
+		this.email = email;
+		this.pass = pass;
+		this.mobile = mobile;
+		this.address = address;
+		this.roleName = roleName;
+	}
+
+	// generate pair of setter and getter methods
+	// Generate Getters and Setters
+	public int getRegId() {
+		return regId;
+	}
+
+	public void setRegId(int regId) {
+		this.regId = regId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+
+	public long getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(long mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String toString() {
+		return regId + " " + name + " " + email + " " 
+				+ pass + " " + mobile + " " + address 
+				+ " " + roleName;
+	}
+
+	public int hashCode() {
+		return this.toString().hashCode();
+	}
+
+	public boolean equals(Object o) {
+		boolean flag=false;
+		if(o instanceof Register) {
+			Register reg=(Register)o;
+			if(this.regId==reg.getRegId() && this.name.equals(reg.getName()) 
+					&& this.email.equals(reg.getEmail()) 
+					&& this.pass.equals(reg.getPass()) 
+					&& this.mobile==reg.getMobile() 
+					&& this.address.equals(reg.getAddress()) 
+					&& this.roleName.equals(reg.getRoleName())) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+}
+
+11) Create a Book Bean
+Rught click on the project-> New-> Class
+Package:beans
+Name:Book
+// Book.java
+package beans;
+
+import java.util.Objects;
+
+public class Book {
+	private String isbn;
+	private String bookName;
+	private String author;
+	private double price;
+	private String publisher;
+	private int publishingYear;
+	private int qtyAvailable;
+	public Book() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Book(String isbn, String bookName, String author, double price, String publisher, int publishingYear,
+			int qtyAvailable) {
+		super();
+		this.isbn = isbn;
+		this.bookName = bookName;
+		this.author = author;
+		this.price = price;
+		this.publisher = publisher;
+		this.publishingYear = publishingYear;
+		this.qtyAvailable = qtyAvailable;
+	}
+	public String getIsbn() {
+		return isbn;
+	}
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+	public String getBookName() {
+		return bookName;
+	}
+	public void setBookName(String bookName) {
+		this.bookName = bookName;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public String getPublisher() {
+		return publisher;
+	}
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+	public int getPublishingYear() {
+		return publishingYear;
+	}
+	public void setPublishingYear(int publishingYear) {
+		this.publishingYear = publishingYear;
+	}
+	public int getQtyAvailable() {
+		return qtyAvailable;
+	}
+	public void setQtyAvailable(int qtyAvailable) {
+		this.qtyAvailable = qtyAvailable;
+	}
+	@Override
+	public String toString() {
+		return "Book [isbn=" + isbn + ", bookName=" + bookName + ", author=" + author + ", price=" + price
+				+ ", publisher=" + publisher + ", publishingYear=" + publishingYear + ", qtyAvailable=" + qtyAvailable
+				+ "]";
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(author, bookName, isbn, price, publisher, publishingYear, qtyAvailable);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Book other = (Book) obj;
+		return Objects.equals(author, other.author) && Objects.equals(bookName, other.bookName)
+				&& Objects.equals(isbn, other.isbn)
+				&& Double.doubleToLongBits(price) == Double.doubleToLongBits(other.price)
+				&& Objects.equals(publisher, other.publisher) && publishingYear == other.publishingYear
+				&& Objects.equals(qtyAvailable, other.qtyAvailable);
+	}
+}
+
+12) Create a Book Bean
+Rught click on the project-> New-> Class
+Package:beans
+Name:BookIssued
+// BookIssued.java
+package beans;
+
+import java.sql.Date;
+import java.util.Objects;
+
+public class BookIssued {
+	private int issueId;
+	private String isbn;
+	private String bookName;
+	private int regId;
+	private String name;
+	private Date reserveDate;
+	private Date issueDate;
+	private Date renewalDate;
+	private Date returnedDate;
+	private String status;
+	public BookIssued() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public BookIssued(int issueId, String isbn, String bookName, int regId, String name, Date reserveDate,
+			Date issueDate, Date renewalDate, Date returnedDate, String status) {
+		super();
+		this.issueId = issueId;
+		this.isbn = isbn;
+		this.bookName = bookName;
+		this.regId = regId;
+		this.name = name;
+		this.reserveDate = reserveDate;
+		this.issueDate = issueDate;
+		this.renewalDate = renewalDate;
+		this.returnedDate = returnedDate;
+		this.status = status;
+	}
+	public int getIssueId() {
+		return issueId;
+	}
+	public void setIssueId(int issueId) {
+		this.issueId = issueId;
+	}
+	public String getIsbn() {
+		return isbn;
+	}
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+	public String getBookName() {
+		return bookName;
+	}
+	public void setBookName(String bookName) {
+		this.bookName = bookName;
+	}
+	public int getRegId() {
+		return regId;
+	}
+	public void setRegId(int regId) {
+		this.regId = regId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Date getReserveDate() {
+		return reserveDate;
+	}
+	public void setReserveDate(Date reserveDate) {
+		this.reserveDate = reserveDate;
+	}
+	public Date getIssueDate() {
+		return issueDate;
+	}
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+	public Date getRenewalDate() {
+		return renewalDate;
+	}
+	public void setRenewalDate(Date renewalDate) {
+		this.renewalDate = renewalDate;
+	}
+	public Date getReturnedDate() {
+		return returnedDate;
+	}
+	public void setReturnedDate(Date returnedDate) {
+		this.returnedDate = returnedDate;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	@Override
+	public String toString() {
+		return "BookIssued [issueId=" + issueId + ", isbn=" + isbn + ", bookName=" + bookName + ", regId=" + regId
+				+ ", name=" + name + ", reserveDate=" + reserveDate + ", issueDate=" + issueDate + ", renewalDate="
+				+ renewalDate + ", returnedDate=" + returnedDate + ", status=" + status + "]";
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(bookName, isbn, issueDate, issueId, name, regId, renewalDate, reserveDate, returnedDate,
+				status);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BookIssued other = (BookIssued) obj;
+		return Objects.equals(bookName, other.bookName) && Objects.equals(isbn, other.isbn)
+				&& Objects.equals(issueDate, other.issueDate) && issueId == other.issueId
+				&& Objects.equals(name, other.name) && regId == other.regId
+				&& Objects.equals(renewalDate, other.renewalDate) && Objects.equals(reserveDate, other.reserveDate)
+				&& Objects.equals(returnedDate, other.returnedDate) && Objects.equals(status, other.status);
+	}
+}
+
+13) Create a DB Connection Factory class for creating DB Connection objects
+// DBConn.java
+package factory;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DBConn {
+	static Connection con;
+
+	// to write JDBC program
+	// i) Load the JDBC driver
+	// ii) Establish connection to DB
+	// iii) Create a Statement object
+	// iv) Execute SQL command using stmt.executeUpdate(sql)
+	// v) display the result
+	// vi) close the stmt and con objects
+	public static Connection getConn() {
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return con;
+	}
+
+	public static void main(String rags[]) {
+		Connection con = getConn();
+		System.out.println(con);
+	}
+}
+
+14) Create Library DAO interface that contains all Librarian required functionalities declarations
+// LibraryDAO.java
+
+package dao;
+
+import java.util.List;
+
+import beans.Book;
+import beans.BookIssued;
+import beans.Register;
+
+public interface LibraryDAO {
+	public int register(Register reg);
+	public int login(String email, 
+			String pass, String roleName);
+	
+	public boolean addBook(Book book);
+	public boolean updateBook(Book book);
+	public boolean deleteBook(String isbn);
+	
+	public List<Book> findAllBooks();
+	public Book searchBookByName(String bookName);
+	
+	public String findBookNameByIsbn(String isbn);
+	public String findNameByRegId(int regId);
+	
+	public List<BookIssued> findReservedBooks();
+	public boolean issueBook(int issueId);
+	public List<BookIssued> findIssuedBooks();
+	
+	public boolean renewalBook(int issueId);
+	public boolean returnBook(int issueId);
+
+	public List<BookIssued> findRenewaledBooks();
+	public List<BookIssued> findReturnBooks();
+}
+
+15) Create Library DAO Implementation class that contains all Librarian required functionalities implementations
+// LibraryJDBCDAO.java
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import beans.Book;
+import beans.BookIssued;
+import beans.Register;
+import factory.DBConn;
+
+public class LibraryJDBCDAO implements LibraryDAO {
+
+	Connection con;
+	Statement stmt;
+	PreparedStatement pstmt1, pstmt2, pstmt3, pstmt4;
+	ResultSet rs;
+
+	static LibraryDAO dao;
+
+	private LibraryJDBCDAO() {
+		try {
+			con = DBConn.getConn();
+			System.out.println("Connection established " + con);
+
+			stmt = con.createStatement();
+			pstmt1 = con.prepareStatement("INSERT INTO register VALUES (?,?,?,?,?,?,?)");
+			pstmt2 = con.prepareStatement("INSERT INTO book VALUES (?,?,?,?,?,?,?)");
+			pstmt3 = con.prepareStatement("UPDATE book SET bookName=?, author=?, price=?, publisher=?, publishingYear=?, qtyAvailable=? WHERE isbn=? ");
+			pstmt4=con.prepareStatement("INSERT INTO bookIssued (issueId, isbn, bookName, regId, name, reserveDate, status) VALUES (?,?,?,?,?,?,?)");
+			System.out.println("PreparedStatements are created");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+
+	public static LibraryDAO getInstance() {
+		if (dao == null)
+			dao = new LibraryJDBCDAO();
+		return dao;
+	}
+
+	@Override
+	public int register(Register reg) {
+		int regId = 0;
+		try {
+			// pk generation
+			rs = stmt.executeQuery("SELECT max(regid) from " + "register");
+			if (rs.next()) {
+				regId = rs.getInt(1);
+			}
+			regId++;
+
+			// record insertion
+			pstmt1.setInt(1, regId);
+			pstmt1.setString(2, reg.getName());
+			pstmt1.setString(3, reg.getEmail());
+			pstmt1.setString(4, reg.getPass());
+			pstmt1.setLong(5, reg.getMobile());
+			pstmt1.setString(6, reg.getAddress());
+			pstmt1.setString(7, reg.getRoleName());
+			pstmt1.executeUpdate();
+			System.out.println("new registeration with " + regId);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		// return statement
+		return regId;
+	}
+
+	@Override
+	public int login(String email, String pass, String roleName) {
+		int regId = 0;
+		try {
+			rs = stmt.executeQuery("select regId from register " + "where email='" + email + "' " + "and pass='" + pass
+					+ "' " + "and roleName='" + roleName + "'");
+			if (rs.next()) {
+				regId = rs.getInt(1);
+				System.out.println("Login Success ");
+			} else {
+				System.out.println("Login Failed ");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return regId;
+	}
+
+	@Override
+	public boolean addBook(Book book) {
+		boolean flag = false;
+		try {
+			pstmt2.setString(1, book.getIsbn());
+			pstmt2.setString(2, book.getBookName());
+			pstmt2.setString(3, book.getAuthor());
+			pstmt2.setDouble(4, book.getPrice());
+			pstmt2.setString(5, book.getPublisher());
+			pstmt2.setInt(6, book.getPublishingYear());
+			pstmt2.setInt(7, book.getQtyAvailable());
+			int i = pstmt2.executeUpdate();
+			System.out.println("Book added");
+			flag = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e);
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean updateBook(Book book) {
+		boolean flag = false;
+		try {
+			pstmt3.setString(1, book.getBookName());
+			pstmt3.setString(2, book.getAuthor());
+			pstmt3.setDouble(3, book.getPrice());
+			pstmt3.setString(4, book.getPublisher());
+			pstmt3.setInt(5, book.getPublishingYear());
+			pstmt3.setInt(6, book.getQtyAvailable());
+			pstmt3.setString(7, book.getIsbn());
+			pstmt3.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return flag;
+	}
+
+	@Override
+	public boolean deleteBook(String isbn) {
+		boolean flag = false;
+		try {
+			int i=stmt.executeUpdate("delete from book where isbn='"+isbn+"'");
+			if(i==1)
+				System.out.println(isbn+" book deleted");
+			else
+				System.out.println(isbn+" book deletion failed");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return flag;
+	}
+
+	@Override
+	public List<Book> findAllBooks() {
+		List<Book> books = new ArrayList<Book>();
+		try {
+			rs = stmt.executeQuery("select * from book");
+			while (rs.next()) {
+				Book book = new Book(rs.getString(1), rs.getString(2), rs.getString(3), rs.getDouble(4), rs.getString(5),
+						rs.getInt(6), rs.getInt(7));
+				books.add(book);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return books;
+	}
+
+
+	@Override
+	public Book searchBookByName(String bookName) {
+		Book book=null;
+		try {
+			rs=stmt.executeQuery("select * from book where bookName like '%"+bookName+"%'");
+			if(rs.next()) {
+				book=new Book(
+					rs.getString(1), rs.getString(2),
+					rs.getString(3), rs.getDouble(4),
+					rs.getString(5), rs.getInt(6), rs.getInt(7)
+				);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return book;
+	}
+
+	public String findBookNameByIsbn(String isbn) {
+		String bookName="";
+		try {
+			rs=stmt.executeQuery("select bookName from book where isbn='"+isbn+"'");
+			if(rs.next()) {
+				bookName=rs.getString(1);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return bookName;
+	}
+	
+	public String findNameByRegId(int regId) {
+		String name="";
+		try {
+			rs=stmt.executeQuery("select name from register where regId="+regId);
+			if(rs.next()) {
+				name=rs.getString(1);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return name;		
+	}
+
+
+	@Override
+	public List<BookIssued> findReservedBooks() {
+		List<BookIssued> books=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("SELECT * FROM bookissued WHERE status='RESERVED'");
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+						rs.getInt(1), 
+						rs.getString(2), rs.getString(3),
+						rs.getInt(4), rs.getString(5),
+						rs.getDate(6), rs.getDate(7), rs.getDate(8), 
+						rs.getDate(9), rs.getString(10)
+						);
+				books.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return books;
+	}
+
+	@Override
+	public boolean issueBook(int issueId) {
+		boolean flag=false;
+		int qtyAvailable=0;
+		String name="";
+		int i=0,j=0;
+		String bookName="";
+		String isbn="";
+		try {
+			rs=stmt.executeQuery("select isbn from bookissued where issueId="+issueId); 
+			if(rs.next()) {
+				isbn=rs.getString(1);
+			}
+			
+			con.setAutoCommit(false);
+			rs=stmt.executeQuery("select bookName, qtyAvailable from book where isbn='"+isbn+"'");
+			if(rs.next()) {
+				bookName=rs.getString(1);
+				qtyAvailable=rs.getInt(2);
+				if(qtyAvailable>0) {
+					qtyAvailable--;
+					i=stmt.executeUpdate("update book set qtyAvailable="+qtyAvailable+" where isbn='"+isbn+"'");
+					j=stmt.executeUpdate("update bookissued set issueDate=curdate(), status='ISSUED' WHERE issueId="+issueId);
+				}
+			}
+			
+			if(i==1 && j==1) {
+				con.commit();
+				flag=true;
+				System.out.println("Book "+bookName+" issued ");
+			} else {
+				con.rollback();
+				flag=false;
+				System.out.println("Book "+bookName+" issued failed ");
+			}
+		} catch(Exception e) {
+			flag=false;
+		}
+		return flag;		
+	}
+
+	@Override
+	public List<BookIssued> findIssuedBooks() {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='ISSUED'");
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+					rs.getInt(1),
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8),
+					rs.getDate(9), rs.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public boolean renewalBook(int issueId) {
+		boolean flag=false;
+		try {
+			
+			int i=stmt.executeUpdate("update bookissued set renewalDate=curdate(), status='RENEWALED' WHERE issueId="+issueId);
+			if(i==1) {
+				System.out.println("Book renewaled "+issueId);
+				flag=true;
+			}	
+			else {
+				System.out.println("Book renewal failed "+issueId);
+				flag=false;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean returnBook(int issueId) {
+		boolean flag=false;
+		String isbn="";
+		
+		try {
+			con.setAutoCommit(false);
+			rs=stmt.executeQuery("select isbn from bookissued where issueId="+issueId);
+			if(rs.next()) {
+				isbn=rs.getString(1);
+			}
+			int i=stmt.executeUpdate("update bookissued set returnedDate=curdate(), status='RETURNED' where issueId="+issueId);
+			int j=stmt.executeUpdate("update book set qtyAvailable=qtyAvailable+1 where isbn='"+isbn+"'");
+			if(i==1 && j==1) {
+				con.commit();
+				System.out.println("Book returned "+issueId);
+				flag=true;
+			}	
+			else {
+				con.rollback();
+				System.out.println("Book return failed "+issueId);
+				flag=false;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}
+	
+	public List<BookIssued> findRenewaledBooks() {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='RENEWALED'");
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+					rs.getInt(1),
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8),
+					rs.getDate(9), rs.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+	public List<BookIssued> findReturnBooks() {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='RETURNED'");
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(rs.getInt(1),
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8), 
+					rs.getDate(9), rs.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+	
+}
+
+16) Create Library Student DAO interface that contains all Student required functionalities declarations
+// LibraryStudentDAO.java
+package dao;
+
+import java.util.List;
+
+import beans.Book;
+import beans.BookIssued;
+
+public interface LibraryStudentDAO {
+	public List<Book> findAllBooks(int regId);
+	public boolean reserveBook(String isbn, int regId);
+	public List<BookIssued> findReservedBooks(int regId);
+	public List<BookIssued> findIssuedBooks(int regId);
+	public List<BookIssued> findRenewaledBooks(int regId);
+	public List<BookIssued> findReturnedBooks(int regId);	
+}
+
+17) Create Library Student DAO implementation class that contains all Student required functionalities implementations
+// LibraryStudentJDBCDAO.java
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import beans.Book;
+import beans.BookIssued;
+import factory.DBConn;
+
+public class LibraryStudentJDBCDAO implements LibraryStudentDAO {
+
+	Connection con;
+	Statement stmt;
+	PreparedStatement pstmt1, pstmt2, pstmt3, pstmt4;
+	ResultSet rs;
+
+	static LibraryStudentDAO dao;
+	LibraryDAO dao0;
+
+	private LibraryStudentJDBCDAO() {
+		try {
+			dao0=LibraryJDBCDAO.getInstance();
+			con = DBConn.getConn();
+			System.out.println("Connection established " + con);
+
+			stmt = con.createStatement();
+			pstmt4=con.prepareStatement("INSERT INTO bookIssued (issueId, isbn, bookName, regId, name, reserveDate, status) VALUES (?,?,?,?,?,?,?)");
+			System.out.println("PreparedStatements are created");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+
+	public static LibraryStudentDAO getInstance() {
+		if (dao == null)
+			dao = new LibraryStudentJDBCDAO();
+		return dao;
+	}
+	
+	@Override
+	public List<Book> findAllBooks(int regId) {
+		List<Book> books=new ArrayList<Book>();
+		Set<String> allBookIds=new HashSet<String>();
+		Set<String> matchingBookIds=new HashSet<String>();
+		String booksIn=null;
+		
+		try {
+			rs=stmt.executeQuery("select isbn from book");
+			while(rs.next()) {
+				allBookIds.add(rs.getString(1));
+			}
+			rs.close();
+			
+			rs=stmt.executeQuery("select isbn from bookIssued where regId="+regId+" and status in ('RESERVED','ISSUED','RENEWALED')");
+			while(rs.next()) {
+				matchingBookIds.add(rs.getString(1));
+			}
+			rs.close();
+			
+			allBookIds.removeAll(matchingBookIds);
+			
+			booksIn=String.join(",", allBookIds);
+			
+			rs = stmt.executeQuery("select * from book b where b.isbn IN ("+booksIn+")");
+			while (rs.next()) {
+				Book book = new Book(rs.getString(1), rs.getString(2), rs.getString(3), rs.getDouble(4), rs.getString(5), rs.getInt(6), rs.getInt(7));
+				books.add(book);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return books;
+	}
+
+	@Override
+	public boolean reserveBook(String isbn, int regId) {
+		boolean flag=false;
+		int issueId=0;
+		int i=0;
+		try {
+				rs=stmt.executeQuery("select max(issueId) from bookIssued");
+				if(rs.next()) {
+					issueId=rs.getInt(1);
+				}
+
+			String bookName=dao0.findBookNameByIsbn(isbn);
+			String name=dao0.findNameByRegId(regId);
+		
+			issueId++;
+			pstmt4.setInt(1, issueId);
+			pstmt4.setString(2, isbn);
+			pstmt4.setString(3, bookName);
+			pstmt4.setInt(4, regId);
+			pstmt4.setString(5, name);
+			pstmt4.setDate(6, new java.sql.Date(System.currentTimeMillis()));
+			pstmt4.setString(7, "RESERVED");
+			i=pstmt4.executeUpdate();
+			flag=true;
+			System.out.println("Book reserved");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}
+	
+	@Override
+	public List<BookIssued> findReservedBooks(int regId) {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='RESERVED' and regId="+regId);
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+					rs.getInt(1),
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8),
+					rs.getDate(9), rs.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+
+	@Override
+	public List<BookIssued> findIssuedBooks(int regId) {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='ISSUED' and regId="+regId);
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+					rs.getInt(1),
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8),
+					rs.getDate(9), rs.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<BookIssued> findRenewaledBooks(int regId) {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='RENEWALED' and regId="+regId);
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+					rs.getInt(1),
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8), 
+					rs.getDate(9), ers.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+
+	public List<BookIssued> findReturnedBooks(int regId) {
+		List<BookIssued> list=new ArrayList<BookIssued>();
+		try {
+			rs=stmt.executeQuery("select * from bookissued where status='RETURNED' and regId="+regId);
+			while(rs.next()) {
+				BookIssued bi=new BookIssued(
+					rs.getInt(1), 
+					rs.getString(2), rs.getString(3),
+					rs.getInt(4), rs.getString(5),
+					rs.getDate(6), rs.getDate(7), rs.getDate(8),
+					rs.getDate(9), rs.getString(10)
+				);
+				list.add(bi);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+
+}
+
+18) Right click on the project-> New-> Package
+Name:servlets
+click on Finish
+
+19) To create a RegisterServlet, rich click on the servlets package-> New-> Servlet
+Java package:servlets
+Classname:RegisterServlet
+Superclass:javax.servlet.http.HttpServlet
+click on Next-> click on Next-> click on Next-> unselect doGet() checkbox and keep only doPost() checkbox selected
+click on Finish button
+
+// RegisterServlet.java
+package servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import beans.Register;
+import dao.LibraryDAO;
+import dao.LibraryJDBCDAO;
+
+@WebServlet("/RegisterServlet")
+public class RegisterServlet extends HttpServlet {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter out=response.getWriter();
+		HttpSession session=request.getSession();
+		ServletContext context=getServletContext();
+		
+		String name=request.getParameter("name").trim();
+		String email=request.getParameter("email").trim();
+		String pass=request.getParameter("pass").trim();
+		long mobile=Long.parseLong(request.getParameter("mobile").trim());
+		String address=request.getParameter("address").trim();
+		String roleName=request.getParameter("roleName").trim();
+		
+		try {
+			LibraryDAO dao=LibraryJDBCDAO.getInstance();
+			Register register=new Register(0,name,email,pass,mobile,address,roleName);
+			int regId=dao.register(register);
+			if(regId>0)
+				response.sendRedirect("./index.jsp");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+20) To create a LoginServlet, right click on the servlets package-> New-> Servlet
+Java package:servlets
+Classname:LoginServlet
+Superclass:javax.servlet.http.HttpServlet
+click on Next-> click on Next-> click on Next-> unselect doGet() checkbox and keep only doPost() checkbox selected
+click on Finish button
+
+// LoginServlet.java
+package servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import dao.LibraryDAO;
+import dao.LibraryJDBCDAO;
+
+
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+	
+	public void doPost(HttpServletRequest request, 
+			HttpServletResponse response) 
+					throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter out=response.getWriter();
+		HttpSession session=request.getSession();
+		ServletContext context=getServletContext();
+		
+		try {
+		// read the form content
+		String email=request.getParameter("email").trim();
+		String pass=request.getParameter("pass").trim();
+		String roleName=request.getParameter("roleName").trim();
+		
+		// create DAO object
+		LibraryDAO dao=LibraryJDBCDAO.getInstance();
+		
+		// invoke dao.login(email,pass,roleName)
+		int regId=dao.login(email, pass, roleName);
+		
+		// if successful, forward adminIndex or studentIndex 
+		// page to browser
+		if(regId > 0) {
+			String name=dao.findNameByRegId(regId);
+			session.setAttribute("name", name);
+			session.setAttribute("regId", regId);
+			session.setAttribute("roleName", roleName);
+			
+			if(roleName.equalsIgnoreCase("admin")) {
+				/*RequestDispatcher disp=
+						context.getRequestDispatcher(
+								"/admin/adminIndex.jsp"); 
+					disp.forward(request, response);
+				*/
+				response.sendRedirect("./admin/adminIndex.jsp");
+				
+			} else 	if(roleName.equalsIgnoreCase("student")) {
+				/* RequestDispatcher disp=
+						context.getRequestDispatcher(
+								"/student/studentIndex.jsp");
+				disp.forward(request, response);
+				*/
+				response.sendRedirect("./student/studentIndex.jsp");
+			}
+		} else {
+			request.setAttribute("loginError", 
+					"Login Failed. Email/Pass is wrong");
+			context.getRequestDispatcher("/index.jsp")
+				.forward(request,  response);
+		}			
+		// otherwise redirect index.jsp to browser, to display 
+		// error message and to take login credentials again.
+		} catch(Exception e) {
+			e.printStackTrace();
+		}	
+	}
+}
+
+21) To place admin JSPs and student JSPs in a seperate folder
+Right click on the src/main/webapp folder-> New-> Folder
+Name:admin
+
+Right click on the src/main/webapp folder-> New-> Folder
+Name:student
+
+**************************************Admin Module JSPs starts here**************************************
+
+22) Create a admin Index file
+Right click src/main/webapp/admin folder-> New-> JSP
+Name:adminIndex.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Admin Index</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css"
+	rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+	<!-- NAVBAR -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="#">Library Admin</a>
+
+		<div class="ml-auto text-white">
+			Welcome
+			<%=session.getAttribute("name")%>
+			<a href="./Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+		</div>
+	</nav>
+
+	<div class="container mt-5">
+
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+
+	</div>
+
+</body>
+</html>
+
+23) Click on Add Book hyperlink, addBook.jsp file is opened
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Add Book</title>
+
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css">
+</head>
+
+<body class="bg-light">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-5">
+
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Book</h4>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" action="../AddBookServlet">
+
+                        <div class="form-group">
+                            <label>ISBN</label>
+                            <input type="text" name="isbn" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Book Name</label>
+                            <input type="text" name="bookName" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input type="text" name="author" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="text" name="price" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Publisher</label>
+                            <input type="text" name="publisher" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Publishing Year</label>
+                            <input type="text" name="publishingYear" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Qty Available</label>
+                            <input type="text" name="qtyAvailable" class="form-control">
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success">Add Book</button>
+                            <button type="reset" class="btn btn-secondary ml-2">Clear</button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+24) Create AddBookServlet
+package servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import beans.Book;
+import dao.LibraryDAO;
+import dao.LibraryJDBCDAO;
+
+@WebServlet("/AddBookServlet")
+public class AddBookServlet extends HttpServlet {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter out=response.getWriter();
+		HttpSession session=request.getSession();
+		ServletContext context=getServletContext();
+
+		String isbn=request.getParameter("isbn").trim();
+		String bookName=request.getParameter("bookName").trim();
+		String author=request.getParameter("author").trim();
+		double price=Double.parseDouble(request.getParameter("price").trim());
+		String publisher=request.getParameter("publisher").trim();
+		int publishingYear=Integer.parseInt(request.getParameter("publishingYear").trim());
+		int qtyAvailable=Integer.parseInt(request.getParameter("qtyAvailable").trim());
+		
+		Book book=new Book(isbn, bookName, author, price, publisher, publishingYear, qtyAvailable);
+		
+		try {
+			LibraryDAO	dao=LibraryJDBCDAO.getInstance();
+			boolean flag=dao.addBook(book);
+			if(flag) {
+				// context.getRequestDispatcher("/admin/adminIndex.jsp").forward(request, response);
+				response.sendRedirect("./admin/adminIndex.jsp");
+			} else
+				out.println("Error");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+25) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:findAllBooks.jsp
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="beans.Book"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>All Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+
+<%
+    try {
+        LibraryDAO dao = LibraryJDBCDAO.getInstance();
+        
+        String name = session.getAttribute("name").toString();
+        String roleName = session.getAttribute("roleName").toString();
+        int regId = ((Integer)session.getAttribute("regId")).intValue();
+        List<Book> books = dao.findAllBooks();
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">All Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>Author</th>
+                        <th>Price</th>
+                        <th>Publisher</th>
+                        <th>Publishing Year</th>
+                        <th>Qty Available</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(Book book : books) {
+                %>
+                    <tr>
+                        <td><%=book.getIsbn()%></td>
+                        <td><%=book.getBookName()%></td>
+                        <td><%=book.getAuthor()%></td>
+                        <td><%=book.getPrice()%></td>
+                        <td><%=book.getPublisher()%></td>
+                        <td><%=book.getPublishingYear()%></td>
+                        <td><%=book.getQtyAvailable()%></td>
+                        <td>-</td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+
+26) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:findReservedBooks.jsp
+<%@page import="beans.BookIssued"%>
+<%@page import="beans.Book"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Reserved Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+
+<%
+    try {
+        LibraryDAO dao = LibraryJDBCDAO.getInstance();
+        List<BookIssued> booksIssued = dao.findReservedBooks();
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Reserved Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>IssuedId</th>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>RegId</th>
+                        <th>Name</th>
+                        <th>Reserve Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                    <tr>
+                        <td><%=bookIssued.getIssueId()%></td>
+                        <td><%=bookIssued.getIsbn()%></td>
+                        <td><%=bookIssued.getBookName()%></td>
+                        <td><%=bookIssued.getRegId()%></td>
+                        <td><%=bookIssued.getName()%></td>
+                        <td><%=bookIssued.getReserveDate()%></td>
+                        <td><%=bookIssued.getStatus()%></td>
+                        
+                        <td>
+                            <a href="./bookIssue.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-success">
+                                Issue
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+27) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:findIssuedBooks.jsp
+<%@page import="beans.BookIssued"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Issued Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+
+<%
+    try {
+        LibraryDAO dao = LibraryJDBCDAO.getInstance();
+        List<BookIssued> booksIssued = dao.findIssuedBooks();
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Issued Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>IssuedId</th>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>RegId</th>
+                        <th>Name</th>
+                        <th>Reserve Date</th>
+                        <th>Status</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                    <tr>
+                        <td><%=bookIssued.getIssueId()%></td>
+                        <td><%=bookIssued.getIsbn()%></td>
+                        <td><%=bookIssued.getBookName()%></td>
+                        <td><%=bookIssued.getRegId()%></td>
+                        <td><%=bookIssued.getName()%></td>
+                        <td><%=bookIssued.getReserveDate()%></td>
+                        <td><%=bookIssued.getStatus()%></td>
+
+                        <td>
+                            <a href="./renewalBook.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-warning">
+                                Renewal
+                            </a>
+                        </td>
+
+                        <td>
+                            <a href="./returnBook.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-success">
+                                Return
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+
+28) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:findRenewaledBooks.jsp
+<%@page import="beans.BookIssued"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Renewaled Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+
+<%
+    try {
+        LibraryDAO dao = LibraryJDBCDAO.getInstance();
+        List<BookIssued> booksIssued = dao.findRenewaledBooks();
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Renewaled Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>IssuedId</th>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>RegId</th>
+                        <th>Name</th>
+                        <th>Reserve Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                    <tr>
+                        <td><%=bookIssued.getIssueId()%></td>
+                        <td><%=bookIssued.getIsbn()%></td>
+                        <td><%=bookIssued.getBookName()%></td>
+                        <td><%=bookIssued.getRegId()%></td>
+                        <td><%=bookIssued.getName()%></td>
+                        <td><%=bookIssued.getReserveDate()%></td>
+                        <td><%=bookIssued.getStatus()%></td>
+
+                        <td>
+                            <a href="./returnBook.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-success">
+                                Return
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+29) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:findReturnedBooks.jsp
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="beans.BookIssued"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Returned Books</title>
+
+<!-- Bootstrap CSS -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+	<div class="card shadow p-4">
+		<h3 class="text-center mb-4">Admin Dashboard</h3>
+
+		<!-- Horizontal Menu -->
+		<ul class="nav nav-pills justify-content-center">
+
+			<li class="nav-item"><a class="nav-link"
+				href="addBook.jsp">➕ Add Book</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findAllBooks.jsp">📘 All Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReservedBooks.jsp">📚 Reserved Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findIssuedBooks.jsp">📤 Issued Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findRenewaledBooks.jsp">🔄 Renewaled Books</a></li>
+
+			<li class="nav-item"><a class="nav-link"
+				href="findReturnedBooks.jsp">📥 Returned Books</a></li>
+
+		</ul>
+	</div>
+
+    <h3 class="text-center mb-4">Returned Books</h3>
+
+    <%
+        try {
+            LibraryDAO dao = LibraryJDBCDAO.getInstance();
+            List<BookIssued> booksIssued = dao.findReturnBooks();
+    %>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Issued Id</th>
+                    <th>ISBN</th>
+                    <th>Book Name</th>
+                    <th>RegId</th>
+                    <th>Name</th>
+                    <th>Reserve Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                <tr>
+                    <td><%=bookIssued.getIssueId()%></td>
+                    <td><%=bookIssued.getIsbn()%></td>
+                    <td><%=bookIssued.getBookName()%></td>
+                    <td><%=bookIssued.getRegId()%></td>
+                    <td><%=bookIssued.getName()%></td>
+                    <td><%=bookIssued.getReserveDate()%></td>
+                    <td><%=bookIssued.getStatus()%></td>
+                </tr>
+                <% } %>
+            </tbody>
+
+        </table>
+    </div>
+
+    <% 
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    %>
+
+</div>
+
+</body>
+</html>
+
+30) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:bookIssue.jsp
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Book Issue</title>
+  <link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<%
+	int issueId=Integer.parseInt(request.getParameter("issueId"));
+	LibraryDAO dao=LibraryJDBCDAO.getInstance();
+	boolean bool=dao.issueBook(issueId);
+	if(bool)
+		%>
+			<jsp:forward page="adminIndex.jsp"></jsp:forward>
+		<%
+%>
+</body>
+</html>
+
+31) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:renewalBook.jsp
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>RenewalBook</title>
+  <link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<%
+	int issueId=Integer.parseInt(request.getParameter("issueId"));
+	LibraryDAO dao=LibraryJDBCDAO.getInstance();
+	boolean bool=dao.renewalBook(issueId);
+	if(bool)
+		%>
+			<jsp:forward page="adminIndex.jsp"></jsp:forward>
+		<%
+%>
+
+</body>
+</html>
+
+32) Right click on the src/main/webapp/admin/ directory -> New-> JSP
+Name:returnBook.jsp
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Return Book</title>
+  <link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<%
+	int issueId=Integer.parseInt(request.getParameter("issueId"));
+	LibraryDAO dao=LibraryJDBCDAO.getInstance();
+	boolean bool=dao.returnBook(issueId);
+	if(bool)
+		%>
+			<jsp:forward page="adminIndex.jsp"></jsp:forward>
+		<%
+%>
+
+</body>
+</html>
+
+
+
+**************************************Admin Module JSPs starts here**************************************
+
+**************************************Student Module JSPs starts here**************************************
+
+31) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:studentIndex.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Student Index</title>
+
+<!-- Bootstrap CSS -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- Top Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Portal</a>
+
+  <div class="ml-auto text-white">
+      Welcome <%= session.getAttribute("name") %> 
+      <a href="./Logout.jsp" class="btn btn-sm btn-outline-light ml-2">Logout</a>
+  </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Student Dashboard</h4>
+
+            <!-- Horizontal Menu -->
+            <ul class="nav nav-pills justify-content-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findAllBooks.jsp">📚 All Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReservedBooks.jsp">🔒 Reserved Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findIssuedBooks.jsp">📖 Issued Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findRenewaledBooks.jsp">🔄 Renewaled Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReturnedBooks.jsp">✔ Returned Books</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+32) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:findAllBooks.jsp
+<%@page import="dao.LibraryStudentDAO"%>
+<%@page import="dao.LibraryStudentJDBCDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="beans.Book"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>All Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+<!-- Page Content -->
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Student Dashboard</h4>
+
+            <!-- Horizontal Menu -->
+            <ul class="nav nav-pills justify-content-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findAllBooks.jsp">📚 All Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReservedBooks.jsp">🔒 Reserved Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findIssuedBooks.jsp">📖 Issued Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findRenewaledBooks.jsp">🔄 Renewaled Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReturnedBooks.jsp">✔ Returned Books</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<%
+    try {
+        LibraryStudentDAO dao = LibraryStudentJDBCDAO.getInstance();
+        
+        String name = session.getAttribute("name").toString();
+        String roleName = session.getAttribute("roleName").toString();
+        int regId = ((Integer)session.getAttribute("regId")).intValue();
+        List<Book> books = dao.findAllBooks(regId);
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">All Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>Author</th>
+                        <th>Price</th>
+                        <th>Publisher</th>
+                        <th>Publishing Year</th>
+                        <th>Qty Available</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(Book book : books) {
+                %>
+                    <tr>
+                        <td><%=book.getIsbn()%></td>
+                        <td><%=book.getBookName()%></td>
+                        <td><%=book.getAuthor()%></td>
+                        <td><%=book.getPrice()%></td>
+                        <td><%=book.getPublisher()%></td>
+                        <td><%=book.getPublishingYear()%></td>
+                        <td><%=book.getQtyAvailable()%></td>
+                        <td>
+                          <a href="reserveBook.jsp?isbn=<%=book.getIsbn()%>&regId=<%=regId%>" 
+                             class="btn btn-sm btn-success">
+                             Reserve
+                          </a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+</div>
+</body>
+</html>
+
+
+33) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:reserveBook.jsp
+<%@page import="dao.LibraryStudentJDBCDAO"%>
+<%@page import="dao.LibraryStudentDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Reserve Book</title>
+  <link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+	<%
+		String isbn=request.getParameter("isbn");
+		int regId=Integer.parseInt(request.getParameter("regId"));
+        LibraryStudentDAO dao = LibraryStudentJDBCDAO.getInstance();
+		boolean flag=dao.reserveBook(isbn, regId);
+		if(flag) {
+	%>
+			<jsp:forward page="findAllBooks.jsp"></jsp:forward>
+		<% 
+		} else {
+			out.println("Error ");
+		}	
+		%>	
+</body>
+</html>
+
+34) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:findReservedBooks.jsp
+<%@page import="dao.LibraryStudentDAO"%>
+<%@page import="dao.LibraryStudentJDBCDAO"%>
+<%@page import="beans.BookIssued"%>
+<%@page import="beans.Book"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Reserved Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+<!-- Page Content -->
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Student Dashboard</h4>
+
+            <!-- Horizontal Menu -->
+            <ul class="nav nav-pills justify-content-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findAllBooks.jsp">📚 All Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReservedBooks.jsp">🔒 Reserved Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findIssuedBooks.jsp">📖 Issued Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findRenewaledBooks.jsp">🔄 Renewaled Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReturnedBooks.jsp">✔ Returned Books</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<%
+    try {
+        LibraryStudentDAO dao = LibraryStudentJDBCDAO.getInstance();
+        int regId=((Integer)session.getAttribute("regId")).intValue();
+        List<BookIssued> booksIssued = dao.findReservedBooks(regId);
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Reserved Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>IssuedId</th>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>RegId</th>
+                        <th>Name</th>
+                        <th>Reserve Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                    <tr>
+                        <td><%=bookIssued.getIssueId()%></td>
+                        <td><%=bookIssued.getIsbn()%></td>
+                        <td><%=bookIssued.getBookName()%></td>
+                        <td><%=bookIssued.getRegId()%></td>
+                        <td><%=bookIssued.getName()%></td>
+                        <td><%=bookIssued.getReserveDate()%></td>
+                        <td><%=bookIssued.getStatus()%></td>
+                        <td>-</td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+
+35) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:findIssuedBooks.jsp
+<%@page import="dao.LibraryStudentDAO"%>
+<%@page import="dao.LibraryStudentJDBCDAO"%>
+<%@page import="beans.BookIssued"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Issued Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+<!-- Page Content -->
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Student Dashboard</h4>
+
+            <!-- Horizontal Menu -->
+            <ul class="nav nav-pills justify-content-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findAllBooks.jsp">📚 All Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReservedBooks.jsp">🔒 Reserved Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findIssuedBooks.jsp">📖 Issued Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findRenewaledBooks.jsp">🔄 Renewaled Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReturnedBooks.jsp">✔ Returned Books</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<%
+    try {
+        LibraryStudentDAO dao = LibraryStudentJDBCDAO.getInstance();
+        int regId=((Integer)session.getAttribute("regId")).intValue();
+        List<BookIssued> booksIssued = dao.findIssuedBooks(regId);
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Issued Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>IssuedId</th>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>RegId</th>
+                        <th>Name</th>
+                        <th>Reserve Date</th>
+                        <th>Status</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                    <tr>
+                        <td><%=bookIssued.getIssueId()%></td>
+                        <td><%=bookIssued.getIsbn()%></td>
+                        <td><%=bookIssued.getBookName()%></td>
+                        <td><%=bookIssued.getRegId()%></td>
+                        <td><%=bookIssued.getName()%></td>
+                        <td><%=bookIssued.getReserveDate()%></td>
+                        <td><%=bookIssued.getStatus()%></td>
+
+                        <td>
+                            <a href="./renewalBook.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-warning">
+                                Renewal
+                            </a>
+                        </td>
+
+                        <td>
+                            <a href="./returnBook.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-success">
+                                Return
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+
+36) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:findRenewaledBooks.jsp
+<%@page import="dao.LibraryStudentDAO"%>
+<%@page import="dao.LibraryStudentJDBCDAO"%>
+<%@page import="beans.BookIssued"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Renewaled Books</title>
+
+<!-- Bootstrap -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+<!-- Page Content -->
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Student Dashboard</h4>
+
+            <!-- Horizontal Menu -->
+            <ul class="nav nav-pills justify-content-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findAllBooks.jsp">📚 All Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReservedBooks.jsp">🔒 Reserved Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findIssuedBooks.jsp">📖 Issued Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findRenewaledBooks.jsp">🔄 Renewaled Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReturnedBooks.jsp">✔ Returned Books</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<%
+    try {
+        LibraryStudentDAO dao = LibraryStudentJDBCDAO.getInstance();
+        int regId=((Integer)session.getAttribute("regId")).intValue();
+        List<BookIssued> booksIssued = dao.findRenewaledBooks(regId);
+%>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Renewaled Books</h4>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>IssuedId</th>
+                        <th>ISBN</th>
+                        <th>Book Name</th>
+                        <th>RegId</th>
+                        <th>Name</th>
+                        <th>Reserve Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                    <tr>
+                        <td><%=bookIssued.getIssueId()%></td>
+                        <td><%=bookIssued.getIsbn()%></td>
+                        <td><%=bookIssued.getBookName()%></td>
+                        <td><%=bookIssued.getRegId()%></td>
+                        <td><%=bookIssued.getName()%></td>
+                        <td><%=bookIssued.getReserveDate()%></td>
+                        <td><%=bookIssued.getStatus()%></td>
+
+                        <td>
+                            <a href="./returnBook.jsp?issueId=<%=bookIssued.getIssueId()%>" 
+                               class="btn btn-sm btn-success">
+                                Return
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<%
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+%>
+
+</div>
+
+</body>
+</html>
+
+
+37) Right click on the src/main/webapp/student/ directory -> New-> JSP
+Name:findReturnedBooks.jsp
+<%@page import="dao.LibraryStudentDAO"%>
+<%@page import="dao.LibraryStudentJDBCDAO"%>
+<%@page import="dao.LibraryJDBCDAO"%>
+<%@page import="beans.BookIssued"%>
+<%@page import="java.util.List"%>
+<%@page import="dao.LibraryDAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Returned Books</title>
+
+<!-- Bootstrap CSS -->
+<link href="../bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Library Admin</a>
+
+  <div class="ml-auto text-white">
+    Welcome <%=session.getAttribute("name")%>  
+    <a href="../Logout.jsp" class="btn btn-sm btn-danger ml-2">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+<!-- Page Content -->
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Student Dashboard</h4>
+
+            <!-- Horizontal Menu -->
+            <ul class="nav nav-pills justify-content-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findAllBooks.jsp">📚 All Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReservedBooks.jsp">🔒 Reserved Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findIssuedBooks.jsp">📖 Issued Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findRenewaledBooks.jsp">🔄 Renewaled Books</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="./findReturnedBooks.jsp">✔ Returned Books</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <h3 class="text-center mb-4">Returned Books</h3>
+
+    <%
+        try {
+            LibraryStudentDAO dao = LibraryStudentJDBCDAO.getInstance();
+            int regId=((Integer)session.getAttribute("regId")).intValue();
+            List<BookIssued> booksIssued = dao.findReturnedBooks(regId);
+    %>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Issued Id</th>
+                    <th>ISBN</th>
+                    <th>Book Name</th>
+                    <th>RegId</th>
+                    <th>Name</th>
+                    <th>Reserve Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <%
+                    for(BookIssued bookIssued : booksIssued) {
+                %>
+                <tr>
+                    <td><%=bookIssued.getIssueId()%></td>
+                    <td><%=bookIssued.getIsbn()%></td>
+                    <td><%=bookIssued.getBookName()%></td>
+                    <td><%=bookIssued.getRegId()%></td>
+                    <td><%=bookIssued.getName()%></td>
+                    <td><%=bookIssued.getReserveDate()%></td>
+                    <td><%=bookIssued.getStatus()%></td>
+                </tr>
+                <% } %>
+            </tbody>
+
+        </table>
+    </div>
+
+    <% 
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    %>
+
+</div>
+
+</body>
+</html>
+
+
+38) Right click on the src/main/webapp/ directory -> New-> JSP
+Name:Logout.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+  <link href="./bootstrap-4.0.0/bootstrap-4.0.0/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+	<%
+		session.invalidate();
+	%>
+	<jsp:forward page="/index.jsp"></jsp:forward>
+</body>
+</html>
+
+
+>>>>>>> da750f117a841e718995c40311489c79778f12fc
